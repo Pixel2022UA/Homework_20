@@ -11,7 +11,7 @@
    - https://mylibrary-e460551407b2.herokuapp.com/api/books/?genre=
 
 2. Получаем конкретную книгу по ID (GET /books/{id}):
-   - https://mylibrary-e460551407b2.herokuapp.com/api/books/   __(В конце ссылки ввести число-ID книги)__  (не забываем / в конце)
+   - https://mylibrary-e460551407b2.herokuapp.com/api/books/   __(В конце ссылки ввести число-ID книги)__  (не забываем "/" в конце)
 
 3. Добавляем новую книгу (POST /books):
    - https://mylibrary-e460551407b2.herokuapp.com/api/books/
@@ -19,13 +19,13 @@
 {"title": "Third book", "author": "Ilon", "genre": "Thriller", "publication_date": "2019-02-04"}
 
 4. Обновляем данные определенной книги по ID (PUT /books/{id}):
-   - https://mylibrary-e460551407b2.herokuapp.com/api/books/   __(В конце ссылки ввести число-ID книги)__  (не забываем / в конце)
+   - https://mylibrary-e460551407b2.herokuapp.com/api/books/   __(В конце ссылки ввести число-ID книги)__  (не забываем "/" в конце)
    - Для примера можно использовать этот шаблон: 
 {"title": "Third book", "author": "Ilon", "genre": "Thriller", "publication_date": "2019-02-04"}
    - __Можно изменить как все данные так и часть данных__, к примеру только {"author": "Ilon"}
 
 5. Удаление книги по ID (DELETE /books/{id}):
-   - https://mylibrary-e460551407b2.herokuapp.com/api/books/   __(В конце ссылки ввести число-ID книги)__  (не забываем / в конце)
+   - https://mylibrary-e460551407b2.herokuapp.com/api/books/   __(В конце ссылки ввести число-ID книги)__  (не забываем "/" в конце)
 
 6. Получаем список всех авторов (GET /authors): 
    - https://mylibrary-e460551407b2.herokuapp.com/api/authors
@@ -33,7 +33,7 @@
    - https://mylibrary-e460551407b2.herokuapp.com/api/authors/?name=   
 
 7. Полчаем информацию об авторе по ID (GET /authors/{id}):
-    - https://mylibrary-e460551407b2.herokuapp.com/api/authors/   __(В конце ссылки ввести число-ID книги)__  (не забываем / в конце)
+    - https://mylibrary-e460551407b2.herokuapp.com/api/authors/   __(В конце ссылки ввести число-ID книги)__  (не забываем "/" в конце)
 
 8. Для запуска тестов необходимо:
    - Скопируйте проект по ссылке: https://github.com/Pixel2022UA/Homework_20
