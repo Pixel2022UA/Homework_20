@@ -103,6 +103,7 @@ class Books(View):
             book.title = title
         if author:
             book.author.name = author
+            book.author.save()
         if genre:
             book.genre = genre
         if publication_date:
