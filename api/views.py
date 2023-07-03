@@ -1,4 +1,6 @@
 import json
+from datetime import datetime
+
 from django.http import JsonResponse
 from django.views import View
 from .models import Book, Author
@@ -46,8 +48,15 @@ class BookList(View):
         except Author.DoesNotExist:
             author = Author.objects.create(name=author_name)
 
+        try:
+            inv_date = datetime.strptime(publication_date, "%Y-%m-%d")
+        except ValueError:
+            return JsonResponse(
+                {"error": "Invalid date format. Use YYYY-MM-DD format."}, status=400
+            )
+
         book = Book.objects.create(
-            title=title, author=author, genre=genre, publication_date=publication_date
+            title=title, author=author, genre=genre, publication_date=inv_date.date()
         )
         data = {
             "id": book.id,
