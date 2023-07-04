@@ -37,7 +37,7 @@ class BookList(APIView):
             try:
                 author = Author.objects.get(name=author_name)
             except Author.DoesNotExist:
-                author = Author.objects.create(name=author_name)
+                author = Author.objects.create(name=author_name['name'])
 
             book = serializer.save(author=author)
             response_data = {
