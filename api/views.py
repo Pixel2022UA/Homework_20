@@ -1,12 +1,17 @@
 import json
 from datetime import datetime
 
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.views import View
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from .models import Book, Author
+from .serializers import BookSerializer, AuthorSerializer
 
 
-class BookList(View):
+class BookList(APIView):
     def get(self, request):
         books = Book.objects.all()
 
@@ -21,131 +26,95 @@ class BookList(View):
         if genre:
             books = books.filter(genre__icontains=genre)
 
-        data = [
-            {
+        serializer = BookSerializer(books, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = BookSerializer(data=request.data)
+
+        if serializer.is_valid():
+            author_name = serializer.validated_data['author']
+            try:
+                author = Author.objects.get(name=author_name)
+            except Author.DoesNotExist:
+                author = Author.objects.create(name=author_name)
+
+            book = serializer.save(author=author)
+            response_data = {
                 "id": book.id,
                 "title": book.title,
                 "author": book.author.name,
                 "genre": book.genre,
                 "publication_date": book.publication_date,
             }
-            for book in books
-        ]
-        return JsonResponse(data, safe=False, status=200)
+            return Response(response_data, status=status.HTTP_201_CREATED)
 
-    def post(self, request):
-        data = json.loads(request.body)
-        title = data.get("title")
-        author_name = data.get("author")
-        genre = data.get("genre")
-        publication_date = data.get("publication_date")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        if not title or not author_name or not genre or not publication_date:
-            return JsonResponse({"error": "Incomplete data"}, status=400)
 
+class Books(APIView):
+    def get_object(self, id):
         try:
-            author = Author.objects.get(name=author_name)
-        except Author.DoesNotExist:
-            author = Author.objects.create(name=author_name)
-
-        try:
-            inv_date = datetime.strptime(publication_date, "%Y-%m-%d")
-        except ValueError:
-            return JsonResponse(
-                {"error": "Invalid date format. Use YYYY-MM-DD format."}, status=400
-            )
-
-        book = Book.objects.create(
-            title=title, author=author, genre=genre, publication_date=inv_date.date()
-        )
-        data = {
-            "id": book.id,
-            "title": book.title,
-            "author": author.name,
-            "genre": book.genre,
-            "publication_date": book.publication_date,
-        }
-        return JsonResponse(data, status=201)
-
-
-class Books(View):
-    def get(self, request, id):
-        try:
-            book = Book.objects.get(id=id)
+            return Book.objects.get(id=id)
         except Book.DoesNotExist:
-            return JsonResponse({"error": "Book not found"}, status=404)
+            raise Http404
 
-        data = {
-            "id": book.id,
-            "title": book.title,
-            "author": book.author.name,
-            "genre": book.genre,
-            "publication_date": book.publication_date,
-        }
-        return JsonResponse(data, safe=False, status=200)
+    def get(self, request, id):
+        book = self.get_object(id)
+        serializer = BookSerializer(book)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, id):
-        try:
-            book = Book.objects.get(id=id)
-        except Book.DoesNotExist:
-            return JsonResponse({"error": "Book not found"}, status=404)
+        book = self.get_object(id)
+        serializer = BookSerializer(book, data=request.data, partial=True)
 
-        data = json.loads(request.body)
-        title = data.get("title")
-        author = data.get("author")
-        genre = data.get("genre")
-        publication_date = data.get("publication_date")
+        if serializer.is_valid():
+            author_name = serializer.validated_data.get('author')
+            if author_name:
+                try:
+                    author = Author.objects.get(name=author_name)
+                except Author.DoesNotExist:
+                    author = Author.objects.create(name=author_name)
+                serializer.validated_data['author'] = author
 
-        if not title and not author and not genre and not publication_date:
-            return JsonResponse({"error": "No data to update"}, status=400)
+            book = serializer.save()
+            response_data = {
+                "id": book.id,
+                "title": book.title,
+                "author": book.author.name,
+                "genre": book.genre,
+                "publication_date": book.publication_date,
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
 
-        if title:
-            book.title = title
-        if author:
-            book.author.name = author
-            book.author.save()
-        if genre:
-            book.genre = genre
-        if publication_date:
-            book.publication_date = publication_date
-
-        book.save()
-
-        data = {
-            "id": book.id,
-            "title": book.title,
-            "author": book.author.name,
-            "genre": book.genre,
-            "publication_date": book.publication_date,
-        }
-        return JsonResponse(data, status=200)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id):
-        try:
-            book = Book.objects.get(id=id)
-        except Book.DoesNotExist:
-            return JsonResponse({"error": "Book not found"}, status=404)
+        book = self.get_object(id)
         book.delete()
-        return JsonResponse({"message": "Book was deleted"}, status=204)
+        return Response({"message": "Book was deleted"}, status=status.HTTP_204_NO_CONTENT)
 
-
-class AuthorList(View):
+class AuthorList(APIView):
     def get(self, request):
-        authors = Author.objects.all()
         name = request.GET.get("name")
+
+        authors = Author.objects.all()
+
         if name:
             authors = authors.filter(name__icontains=name)
 
-        data = [{"id": author.id, "name": author.name} for author in authors]
-        return JsonResponse(data, safe=False, status=200)
+        serializer = AuthorSerializer(authors, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-class Authors(View):
-    def get(self, request, id):
+class Authors(APIView):
+    def get_object(self, id):
         try:
-            author = Author.objects.get(id=id)
+            return Author.objects.get(id=id)
         except Author.DoesNotExist:
-            return JsonResponse({"error": "Author not found"}, status=404)
+            raise Http404
 
-        data = {"id": author.id, "name": author.name}
-        return JsonResponse(data, safe=False, status=200)
+    def get(self, request, id):
+        author = self.get_object(id)
+        serializer = AuthorSerializer(author)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
