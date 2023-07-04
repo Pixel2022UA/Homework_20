@@ -1,0 +1,218 @@
+openapi: 3.0.3
+info:
+  title: Library
+  description: Create list of books, get books with authors.
+  version: 1.0.0
+servers:
+  - url: https://mylibrary-e460551407b2.herokuapp.com/api/
+tags:
+  - name: book
+    description: Everything about books
+  - name: author
+    description: Everything about authors
+paths:
+  /books/:
+    get:
+      tags:
+        - book
+      summary: List of books
+      description: Get all books
+      parameters:
+        - in: query
+          name: title
+          description: Filter books by title
+          schema:
+            type: string
+        - in: query
+          name: author
+          description: Filter books by author's name
+          schema:
+            type: string
+        - in: query
+          name: genre
+          description: Filter books by genre
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookWithID'
+    post:
+      tags:
+        - book
+      summary: Add a new book
+      description: Add a new book
+      requestBody:
+        description: Create a new book
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+        required: true
+      responses:
+        '201':
+          description: Book created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Invalid date format. Use YYYY-MM-DD format or Incomplete data
+  /books/{id}/:
+    put:
+      tags:
+        - book
+      summary: Update book by ID
+      description: Update book by ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of the book to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Update an existent book
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+        required: true
+      responses:
+        '200':
+          description: Update successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: No data to update
+        '404':
+          description: Book not found
+    get:
+      tags:
+        - book
+      summary: Get book by ID
+      description: Get book by ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of book
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookWithID'
+        '404':
+          description: Book not found
+    delete:
+      tags:
+        - book
+      summary: Delete book by id
+      description: Delete book by id
+      parameters:
+        - name: id
+          in: path
+          description: ID of book
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Book was delete successful
+        '404':
+          description: Book not found
+  /authors/:
+    get:
+      tags:
+        - author
+      summary: List of authors
+      description: List of authors
+      parameters:
+        - in: query
+          name: name
+          description: Filter authors by name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+  /authors/{id}/:
+    get:
+      tags:
+        - author
+      summary: Get author by id
+      description: Get author by id
+      parameters:
+        - name: id
+          in: path
+          description: Author by id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '404':
+          description:  Author not found
+components:
+  schemas:
+    Book:
+      properties:
+        title:
+          type: string
+          example: My book
+        author:
+          type: string
+          example: Oliver
+        genre:
+          type: string
+          example: Fantastic
+        publication_date:
+          type: string
+          format: date
+    BookWithID:
+      properties:
+        id:
+          type: integer
+          example: 10
+        title:
+          type: string
+          example: My book
+        author:
+          type: string
+          example: Oliver
+        genre:
+          type: string
+          example: Fantastic
+        publication_date:
+          type: string
+          format: date
+    Author:
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Mike
