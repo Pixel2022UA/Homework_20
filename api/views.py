@@ -13,7 +13,7 @@ from .serializers import BookSerializer, AuthorSerializer
 
 class BookList(APIView):
     def get(self, request):
-        books = Book.objects.all()
+        queryset = Book.objects.all()
 
         title = request.GET.get("title")
         author = request.GET.get("author")
