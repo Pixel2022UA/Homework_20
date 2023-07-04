@@ -1,10 +1,11 @@
 from unittest import TestCase
-
+from rest_framework.test import APIClient
 import requests
 
 
 class APITestCase(TestCase):
     def setUp(self):
+        self.client = APIClient()
         self.base_url = "https://mylibrary-e460551407b2.herokuapp.com/api/"
 
     def get_last_book_id(self):
@@ -39,11 +40,11 @@ class APITestCase(TestCase):
             "genre": "Test Genre",
             "publication_date": "2023-05-16",
         }
-        response = requests.post(f"{self.base_url}books/", json=data)
+        response = self.client.post("/api/books/", data, format="json")
         self.assertEqual(response.status_code, 201)
         data = response.json()
         self.assertEqual(data["title"], "Test Book")
-        self.assertEqual(data["author"], "Test Author")
+        self.assertEqual(data["author"]["name"], "Test Author")
         self.assertEqual(data["genre"], "Test Genre")
         self.assertEqual(data["publication_date"], "2023-05-16")
         self.assertIsInstance(data, dict)
@@ -56,11 +57,11 @@ class APITestCase(TestCase):
             "genre": "Updated Genre",
             "publication_date": "2023-05-17",
         }
-        response = requests.put(f"{self.base_url}books/{last_book}/", json=data)
+        response = self.client.put(f"/api/books/{last_book}/", data, format="json")
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data["title"], "Updated Book")
-        self.assertEqual(data["author"], "Updated Author")
+        self.assertEqual(data["author"]["name"], "Updated Author")
         self.assertEqual(data["genre"], "Updated Genre")
         self.assertEqual(data["publication_date"], "2023-05-17")
         self.assertIsInstance(data, dict)
