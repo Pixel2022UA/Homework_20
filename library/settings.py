@@ -38,7 +38,7 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
-    'rest_framework',
+    "rest_framework",
     "whitenoise.runserver_nostatic",
     "api",
     "django.contrib.admin",

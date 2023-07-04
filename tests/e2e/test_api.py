@@ -2,6 +2,7 @@ from unittest import TestCase
 
 import requests
 
+
 class APITestCase(TestCase):
     def setUp(self):
         self.base_url = "https://mylibrary-e460551407b2.herokuapp.com/api/"
@@ -41,10 +42,10 @@ class APITestCase(TestCase):
         response = requests.post(f"{self.base_url}books/", json=data)
         self.assertEqual(response.status_code, 201)
         data = response.json()
-        self.assertEqual(data['title'], 'Test Book')
-        self.assertEqual(data['author'], 'Test Author')
-        self.assertEqual(data['genre'], 'Test Genre')
-        self.assertEqual(data['publication_date'], '2023-05-16')
+        self.assertEqual(data["title"], "Test Book")
+        self.assertEqual(data["author"], "Test Author")
+        self.assertEqual(data["genre"], "Test Genre")
+        self.assertEqual(data["publication_date"], "2023-05-16")
         self.assertIsInstance(data, dict)
 
     def test_update_book(self):
@@ -58,10 +59,10 @@ class APITestCase(TestCase):
         response = requests.put(f"{self.base_url}books/{last_book}/", json=data)
         self.assertEqual(response.status_code, 200)
         data = response.json()
-        self.assertEqual(data['title'], 'Updated Book')
-        self.assertEqual(data['author'], 'Updated Author')
-        self.assertEqual(data['genre'], 'Updated Genre')
-        self.assertEqual(data['publication_date'], '2023-05-17')
+        self.assertEqual(data["title"], "Updated Book")
+        self.assertEqual(data["author"], "Updated Author")
+        self.assertEqual(data["genre"], "Updated Genre")
+        self.assertEqual(data["publication_date"], "2023-05-17")
         self.assertIsInstance(data, dict)
 
     def test_delete_book(self):
