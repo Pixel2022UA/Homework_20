@@ -1,7 +1,5 @@
 name: pytest
-
 on: [push]
-
 jobs:
   pytest:
     runs-on: ubuntu-latest
