@@ -50,7 +50,7 @@ class Books(APIView):
                 {"error": "Book not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
-    def get(self, id):
+    def get(self, request, id):
         book = self.get_object(id)
         serializer = BookSerializer(book)
         return Response(serializer.data, status=status.HTTP_200_OK)
