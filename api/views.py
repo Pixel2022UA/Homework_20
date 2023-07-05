@@ -96,7 +96,7 @@ class AuthorList(APIView):
 
 
 class Authors(APIView):
-    def get_object(self, request, id):
+    def get_object(self, id):
         try:
             return Author.objects.get(id=id)
         except Author.DoesNotExist:
