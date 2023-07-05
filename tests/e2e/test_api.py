@@ -64,7 +64,6 @@ class APITestCase(TestCase):
         self.assertEqual(data["publication_date"], "2023-05-17")
         self.assertIsInstance(data, dict)
 
-    #
     def test_delete_book(self):
         last_book = self.get_last_book_id()
         response = requests.delete(f"{self.base_url}books/{last_book}/")

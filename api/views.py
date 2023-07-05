@@ -77,7 +77,7 @@ class Books(APIView):
             return Response(response_data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, id):
+    def delete(self, request, id):
         book = self.get_object(id)
         book.delete()
         return Response(
@@ -96,7 +96,7 @@ class AuthorList(APIView):
 
 
 class Authors(APIView):
-    def get_object(self, id):
+    def get_object(self, request, id):
         try:
             return Author.objects.get(id=id)
         except Author.DoesNotExist:
@@ -104,7 +104,7 @@ class Authors(APIView):
                 {"error": "Author not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
-    def get(self, id):
+    def get(self, request, id):
         author = self.get_object(id)
         serializer = AuthorSerializer(author)
         return Response(serializer.data, status=status.HTTP_200_OK)
