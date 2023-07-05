@@ -7,10 +7,9 @@ class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = ('id', 'title', 'author', 'genre', 'publication_date')
-        ordering = ['id']
+
 
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = ('id', 'name')
-        ordering = ['id']
