@@ -46,9 +46,7 @@ class Books(APIView):
         try:
             return Book.objects.get(id=id)
         except Book.DoesNotExist:
-            raise Response(
-                {"error": "Book not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+            raise Http404
 
     def get(self, request, id):
         book = self.get_object(id)
@@ -100,9 +98,7 @@ class Authors(APIView):
         try:
             return Author.objects.get(id=id)
         except Author.DoesNotExist:
-            raise Response(
-                {"error": "Author not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+            raise Http404
 
     def get(self, request, id):
         author = self.get_object(id)
