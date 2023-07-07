@@ -1,7 +1,5 @@
 name: pytest
-
 on: [push]
-
 jobs:
   pytest:
     runs-on: ubuntu-latest
@@ -9,3 +7,5 @@ jobs:
       - uses: actions/checkout@main
       - name: Install dependencies
         run: pip install -r requirements.txt
+      - name: Run tests
+        run: pytest
