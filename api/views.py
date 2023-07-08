@@ -1,4 +1,7 @@
+import time
+
 from django.http import Http404
+from django.views.decorators.cache import cache_page
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -7,6 +10,7 @@ from .serializers import BookSerializer, AuthorSerializer
 
 
 class BookList(APIView):
+    @cache_page(60)
     def get(self, request):
         books = Book.objects.all().order_by("id")
         title = request.GET.get("title")
@@ -19,6 +23,7 @@ class BookList(APIView):
         if genre:
             books = books.filter(genre__icontains=genre)
         serializer = BookSerializer(books, many=True)
+        time.sleep(4)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
