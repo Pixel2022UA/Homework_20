@@ -1,0 +1,11 @@
+services:
+  web:
+    tty: true
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - REDIS_URL=${REDIS_URL}
+      - DATABASE_URL=${DATABASE_URL}
