@@ -3,6 +3,7 @@ import time
 from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -12,6 +13,7 @@ from .serializers import BookSerializer, AuthorSerializer
 
 class BookList(APIView):
     @method_decorator(cache_page(60))
+    @method_decorator(vary_on_cookie)
     def get(self, request):
         books = Book.objects.all().order_by("id")
         title = request.GET.get("title")
