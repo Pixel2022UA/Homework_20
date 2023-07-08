@@ -13,7 +13,6 @@ from .serializers import BookSerializer, AuthorSerializer
 
 class BookList(APIView):
     @method_decorator(cache_page(60))
-    @method_decorator(vary_on_cookie)
     def get(self, request):
         books = Book.objects.all().order_by("id")
         title = request.GET.get("title")
@@ -56,6 +55,7 @@ class Books(APIView):
         except Book.DoesNotExist:
             raise Http404
 
+    @method_decorator(cache_page(60))
     def get(self, request, id):
         book = self.get_object(id)
         serializer = BookSerializer(book)
@@ -92,6 +92,7 @@ class Books(APIView):
 
 
 class AuthorList(APIView):
+    @method_decorator(cache_page(60))
     def get(self, request):
         name = request.GET.get("name")
         authors = Author.objects.all()
@@ -108,6 +109,7 @@ class Authors(APIView):
         except Author.DoesNotExist:
             raise Http404
 
+    @method_decorator(cache_page(60))
     def get(self, request, id):
         author = self.get_object(id)
         serializer = AuthorSerializer(author)
