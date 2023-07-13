@@ -7,7 +7,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework import status, serializers
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Book, Author
@@ -31,7 +31,7 @@ class RegisterView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 class BookList(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     # @method_decorator(cache_page(60))
     def get(self, request):
         books = Book.objects.all().order_by("id")
@@ -48,7 +48,6 @@ class BookList(APIView):
         time.sleep(4)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    permission_classes = [IsAuthenticated]
     def post(self, request):
         serializer = BookSerializer(data=request.data)
         if serializer.is_valid():
