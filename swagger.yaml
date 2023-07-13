@@ -89,6 +89,8 @@ paths:
                 $ref: '#/components/schemas/Book'
         '400':
           description: Invalid date format. Use YYYY-MM-DD format or Incomplete data
+        '401':
+          description: Authentication credentials were not provided
   /books/{id}/:
     put:
       tags:
@@ -120,6 +122,8 @@ paths:
                 $ref: '#/components/schemas/Book'
         '400':
           description: No data to update
+        '401':
+          description: Authentication credentials were not provided
         '404':
           description: Book not found
     get:
@@ -160,6 +164,8 @@ paths:
       responses:
         '204':
           description: Book was delete successful
+        '401':
+          description: Authentication credentials were not provided
         '404':
           description: Book not found
   /authors/:
