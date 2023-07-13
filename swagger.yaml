@@ -6,15 +6,39 @@ info:
 servers:
   - url: https://mylibrary-e460551407b2.herokuapp.com/api/
 tags:
-  - name: book
+  - name: Registration
+    description: You can register here
+  - name: Book
     description: Everything about books
-  - name: author
+  - name: Author
     description: Everything about authors
 paths:
+  /register/:
+    post:
+      tags:
+        - Registration
+      summary: Registration
+      description: You can register here
+      requestBody:
+        description: Create account
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Registration'
+        required: true
+      responses:
+        '200':
+          description: Successful registration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Gettoken'
+        '400':
+          description: Username already exists.
   /books/:
     get:
       tags:
-        - book
+        - Book
       summary: List of books
       description: Get all books
       parameters:
@@ -40,11 +64,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BookWithID'
+        '400':
+          description: "Username already exists."
     post:
       tags:
-        - book
+        - Book
       summary: Add a new book
       description: Add a new book
+      security:
+        - TokenAuth: []
       requestBody:
         description: Create a new book
         content:
@@ -64,9 +92,11 @@ paths:
   /books/{id}/:
     put:
       tags:
-        - book
+        - Book
       summary: Update book by ID
       description: Update book by ID
+      security:
+        - TokenAuth: []
       parameters:
         - name: id
           in: path
@@ -94,7 +124,7 @@ paths:
           description: Book not found
     get:
       tags:
-        - book
+        - Book
       summary: Get book by ID
       description: Get book by ID
       parameters:
@@ -115,9 +145,11 @@ paths:
           description: Book not found
     delete:
       tags:
-        - book
+        - Book
       summary: Delete book by id
       description: Delete book by id
+      security:
+        - TokenAuth: []
       parameters:
         - name: id
           in: path
@@ -133,7 +165,7 @@ paths:
   /authors/:
     get:
       tags:
-        - author
+        - Author
       summary: List of authors
       description: List of authors
       parameters:
@@ -152,7 +184,7 @@ paths:
   /authors/{id}/:
     get:
       tags:
-        - author
+        - Author
       summary: Get author by id
       description: Get author by id
       parameters:
@@ -172,7 +204,26 @@ paths:
         '404':
           description:  Author not found
 components:
+  securitySchemes:
+    TokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Enter prefix "Token" before token e.g. "Token 5a6ea47ac5470127625ca15967d2b90f7bcf36ba".
   schemas:
+    Registration:
+      properties:
+        username:
+          type: string
+          example: myusername
+        password:
+          type: string
+          example: password123
+    Gettoken:
+      properties:
+        token:
+          type: string
+          example: 48a39ba7a03599b367b5c11095d92fbda8903c73
     Book:
       properties:
         title:

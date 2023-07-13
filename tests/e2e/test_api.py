@@ -7,6 +7,7 @@ from rest_framework import status
 
 fake = Faker()
 
+
 class APITestCase(TestCase):
     def setUp(self):
         self.base_url = "https://mylibrary-e460551407b2.herokuapp.com/api/"
@@ -16,19 +17,19 @@ class APITestCase(TestCase):
         username = fake.user_name()
         password = fake.password()
         data = {
-            'username': username,
-            'password': password,
+            "username": username,
+            "password": password,
         }
         response = requests.post(f"{self.base_url}register/", json=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response_data = response.json()
-        self.assertIn('token', response_data)
-        self.assertTrue(response_data['token'])
-        self.__class__.token = response_data['token']
+        self.assertIn("token", response_data)
+        self.assertTrue(response_data["token"])
+        self.__class__.token = response_data["token"]
 
     @pytest.mark.run(order=2)
     def test_create_book(self):
-        headers = {'Authorization': f'Token {self.token}'}
+        headers = {"Authorization": f"Token {self.token}"}
         data = {
             "title": "Test Book",
             "author": "Test Author",
@@ -44,14 +45,13 @@ class APITestCase(TestCase):
         self.assertEqual(data["publication_date"], "2023-05-16")
         self.assertIsInstance(data, dict)
 
-    @pytest.mark.run(order=3)
     def get_last_book_id(self):
         response = requests.get(f"{self.base_url}books/")
         data = response.json()
         last_book_id = data[-1]["id"]
         return last_book_id
 
-    # @pytest.mark.run(order=4)
+    @pytest.mark.run(order=3)
     def test_get_books(self):
         response = requests.get(f"{self.base_url}books/")
         self.assertEqual(response.status_code, 200)
@@ -74,7 +74,7 @@ class APITestCase(TestCase):
 
     @pytest.mark.run(order=5)
     def test_update_book(self):
-        headers = {'Authorization': f'Token {self.token}'}
+        headers = {"Authorization": f"Token {self.token}"}
         last_book = self.get_last_book_id()
         data = {
             "title": "Updated Book",
@@ -82,7 +82,9 @@ class APITestCase(TestCase):
             "genre": "Updated Genre",
             "publication_date": "2023-05-17",
         }
-        response = requests.put(f"{self.base_url}books/{last_book}/", headers=headers, json=data)
+        response = requests.put(
+            f"{self.base_url}books/{last_book}/", headers=headers, json=data
+        )
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data["title"], "Updated Book")
@@ -93,9 +95,11 @@ class APITestCase(TestCase):
 
     @pytest.mark.run(order=6)
     def test_delete_book(self):
-        headers = {'Authorization': f'Token {self.token}'}
+        headers = {"Authorization": f"Token {self.token}"}
         last_book = self.get_last_book_id()
-        response = requests.delete(f"{self.base_url}books/{last_book}/", headers=headers)
+        response = requests.delete(
+            f"{self.base_url}books/{last_book}/", headers=headers
+        )
         self.assertEqual(response.status_code, 204)
 
     @pytest.mark.run(order=7)

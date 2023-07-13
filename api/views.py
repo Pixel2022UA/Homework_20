@@ -16,22 +16,27 @@ from .serializers import BookSerializer, AuthorSerializer
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
+
     def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
+        username = request.data.get("username")
+        password = request.data.get("password")
         if username and password:
             try:
                 user = User.objects.create_user(username=username, password=password)
                 token, _ = Token.objects.get_or_create(user=user)
-                return Response({'token': token.key})
+                return Response({"token": token.key})
             except IntegrityError:
-                raise serializers.ValidationError('Username already exists.')
+                raise serializers.ValidationError("Username already exists.")
         else:
-            return Response({'error': 'Please enter valid username and password'},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Please enter valid username and password"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
 
 class BookList(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
+
     # @method_decorator(cache_page(60))
     def get(self, request):
         books = Book.objects.all().order_by("id")
@@ -70,6 +75,7 @@ class BookList(APIView):
 
 class Books(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get_object(self, id):
         try:
             return Book.objects.get(id=id)
@@ -114,6 +120,7 @@ class Books(APIView):
 
 class AuthorList(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
+
     # @method_decorator(cache_page(60))
     def get(self, request):
         name = request.GET.get("name")
@@ -126,6 +133,7 @@ class AuthorList(APIView):
 
 class Authors(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get_object(self, id):
         try:
             return Author.objects.get(id=id)
