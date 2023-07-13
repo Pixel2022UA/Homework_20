@@ -7,7 +7,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework import status, serializers
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Book, Author
@@ -18,7 +18,6 @@ class RegisterView(APIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
-
         if username and password:
             try:
                 user = User.objects.create_user(username=username, password=password)
@@ -27,7 +26,7 @@ class RegisterView(APIView):
             except IntegrityError:
                 raise serializers.ValidationError('Username already exists.')
         else:
-            return Response({'error': 'Please provide a valid username and password'},
+            return Response({'error': 'Please enter valid username and password'},
                             status=status.HTTP_400_BAD_REQUEST)
 
 class BookList(APIView):
@@ -69,6 +68,7 @@ class BookList(APIView):
 
 
 class Books(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     def get_object(self, id):
         try:
             return Book.objects.get(id=id)
@@ -112,6 +112,7 @@ class Books(APIView):
 
 
 class AuthorList(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     # @method_decorator(cache_page(60))
     def get(self, request):
         name = request.GET.get("name")
