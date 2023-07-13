@@ -1,6 +1,7 @@
 import time
 
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -18,12 +19,16 @@ class RegisterView(APIView):
         username = request.data.get('username')
         password = request.data.get('password')
 
-        if username and password:
-            user = User.objects.create_user(username=username, password=password)
-            token, _ = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key})
-        else:
-            return Response({'error': 'Please provide a valid username and password'},
+        try:
+            if username and password:
+                user = User.objects.create_user(username=username, password=password)
+                token, _ = Token.objects.get_or_create(user=user)
+                return Response({'token': token.key})
+            else:
+                return Response({'error': 'Please provide a valid username and password'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        except IntegrityError:
+            return Response({'error': 'Username already exists'},
                             status=status.HTTP_400_BAD_REQUEST)
 
 class BookList(APIView):
