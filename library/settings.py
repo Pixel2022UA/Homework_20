@@ -39,6 +39,7 @@ if DEBUG:
 # Application definition
 
 INSTALLED_APPS = [
+    "rest_framework.authtoken",
     "rest_framework",
     "whitenoise.runserver_nostatic",
     "api",
