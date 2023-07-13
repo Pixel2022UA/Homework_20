@@ -7,7 +7,6 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework import status, serializers
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -16,7 +15,6 @@ from .serializers import BookSerializer, AuthorSerializer
 
 
 class RegisterView(APIView):
-    @permission_classes([AllowAny])
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -33,8 +31,8 @@ class RegisterView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 class BookList(APIView):
-    @permission_classes([AllowAny])
-    @method_decorator(cache_page(60))
+    permission_classes = [AllowAny]
+    # @method_decorator(cache_page(60))
     def get(self, request):
         books = Book.objects.all().order_by("id")
         title = request.GET.get("title")
@@ -50,7 +48,7 @@ class BookList(APIView):
         time.sleep(4)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @permission_classes([IsAuthenticated])
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         serializer = BookSerializer(data=request.data)
         if serializer.is_valid():
@@ -78,14 +76,12 @@ class Books(APIView):
         except Book.DoesNotExist:
             raise Http404
 
-    @permission_classes([AllowAny])
-    @method_decorator(cache_page(60))
+    # @method_decorator(cache_page(60))
     def get(self, request, id):
         book = self.get_object(id)
         serializer = BookSerializer(book)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @permission_classes([IsAuthenticated])
     def put(self, request, id):
         book = self.get_object(id)
         serializer = BookSerializer(book, data=request.data, partial=True)
@@ -108,7 +104,6 @@ class Books(APIView):
             return Response(response_data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @permission_classes([IsAuthenticated])
     def delete(self, request, id):
         book = self.get_object(id)
         book.delete()
@@ -118,8 +113,7 @@ class Books(APIView):
 
 
 class AuthorList(APIView):
-    @permission_classes([AllowAny])
-    @method_decorator(cache_page(60))
+    # @method_decorator(cache_page(60))
     def get(self, request):
         name = request.GET.get("name")
         authors = Author.objects.all()
@@ -136,8 +130,7 @@ class Authors(APIView):
         except Author.DoesNotExist:
             raise Http404
 
-    @permission_classes([AllowAny])
-    @method_decorator(cache_page(60))
+    # @method_decorator(cache_page(60))
     def get(self, request, id):
         author = self.get_object(id)
         serializer = AuthorSerializer(author)
