@@ -1,12 +1,29 @@
 from unittest import TestCase
-import requests
 
+from faker import Faker
+import requests
+from rest_framework.authtoken.admin import User
+from rest_framework.authtoken.models import Token
+from rest_framework.test import APIClient
 
 class APITestCase(TestCase):
     def setUp(self):
         self.base_url = "https://mylibrary-e460551407b2.herokuapp.com/api/"
 
+    def test_register_user(self):
+        client = APIClient()
+        username = Faker.user_name()
+        password = Faker.password()
+        response = client.post('/register/', {'username': username, 'password': password})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('token', response.data)
+        self.token = response.data['token']
+        self.assertTrue(User.objects.filter(username=username).exists())
+        user = User.objects.get(username=username)
+        self.assertTrue(Token.objects.filter(user=user, key=self.token).exists())
+
     def test_create_book(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
         data = {
             "title": "Test Book",
             "author": "Test Author",
