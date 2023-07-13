@@ -9,7 +9,7 @@ __Для ДЗ №23 ( API Auth )__
 - Пример: {"username":"user123", "password":"123456789"}
 
 - После получения токена в Postman во вкладке Headers в поле Key=Authorization, а в поле Value вписать ваш токен, :exclamation:НО перед токеном написать Token, ниже пример.
-- ![](https://github.com/Pixel2022UA/Homework_20/blob/main/images/%D0%A1%D0%BD%D0%B8%D0%BC%D0%BE%D0%BA%20%D1%8D%D0%BA%D1%80%D0%B0%D0%BD%D0%B0%20%D0%BE%D1%82%202023-07-14%2001-10-10.png)
+- ![](https://github.com/Pixel2022UA/Homework_20/blob/main/images/image1.png)
 
 2. Получаем список всех книг (GET /books) - для всех пользователей:
    - https://mylibrary-e460551407b2.herokuapp.com/api/books/
