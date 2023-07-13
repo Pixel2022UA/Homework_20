@@ -1,17 +1,27 @@
 import time
 
+from django.contrib.auth.models import User
 from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Book, Author
 from .serializers import BookSerializer, AuthorSerializer
 
 
+class RegisterView(APIView):
+    def post(self, request):
+        user = User.objects.create()
+        token = Token.objects.create(user=user)
+        return Response({'token': token.key})
+
 class BookList(APIView):
-    @method_decorator(cache_page(60))
+    permission_classes = [IsAuthenticated]
+    # @method_decorator(cache_page(60))
     def get(self, request):
         books = Book.objects.all().order_by("id")
         title = request.GET.get("title")

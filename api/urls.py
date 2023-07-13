@@ -7,4 +7,5 @@ urlpatterns = [
     path("books/<int:id>/", csrf_exempt(Books.as_view()), name="book-id"),
     path("authors/", csrf_exempt(AuthorList.as_view()), name="author-list"),
     path("authors/<int:id>/", csrf_exempt(Authors.as_view()), name="author-id"),
+    path('register/', RegisterView.as_view(), name='register'),
 ]
