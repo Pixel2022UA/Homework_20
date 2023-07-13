@@ -1,6 +1,6 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import path
-from .views import Books, BookList, AuthorList, Authors
+from .views import Books, BookList, AuthorList, Authors, RegisterView
 
 urlpatterns = [
     path("books/", csrf_exempt(BookList.as_view()), name="book-list"),
