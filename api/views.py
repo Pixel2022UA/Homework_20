@@ -125,6 +125,7 @@ class AuthorList(APIView):
 
 
 class Authors(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     def get_object(self, id):
         try:
             return Author.objects.get(id=id)
