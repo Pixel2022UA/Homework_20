@@ -3,13 +3,15 @@ __Для ДЗ №23 ( API Auth )__
 - #Список ссылок для проверки ДЗ:
 - :exclamation: __В Postman для корректной работы в конце каждой URL необходимо добавлять "/"__ :exclamation:
 
-1. Регистрация и получения токена ( POST/register/)
+1. Регистрация и получение токена ( POST/register/)
 - Можно использовать Postman или генератор запроса через Swagger.
 - Получаем токен, для этого нужно создать логин и пароль в теле запроса.
 - Пример: {"username":"user123", "password":"123456789"}
 
 - После получения токена в Postman во вкладке Headers в поле Key=Authorization, а в поле Value вписать ваш токен, :exclamation:НО перед токеном написать Token, ниже пример.
 - ![](https://github.com/Pixel2022UA/Homework_20/blob/main/images/image1.png)
+
+- :exclamation: Используя Swagger при авторизации необходимо так прописывать Token перед самим токеном.
 
 2. Получаем список всех книг (GET /books) - для всех пользователей:
    - https://mylibrary-e460551407b2.herokuapp.com/api/books/
