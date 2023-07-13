@@ -11,7 +11,7 @@ __Для ДЗ №23 ( API Auth )__
 - После получения токена в Postman во вкладке Headers в поле Key=Authorization, а в поле Value вписать ваш токен, :exclamation:НО перед токеном написать Token, ниже пример.
 - ![](https://github.com/Pixel2022UA/Homework_20/blob/main/images/image1.png)
 
-- :exclamation: Используя Swagger при авторизации необходимо так прописывать Token перед самим токеном.
+- :exclamation: Используя Swagger при авторизации необходимо так же прописывать Token перед самим токеном.
 
 2. Получаем список всех книг (GET /books) - для всех пользователей:
    - https://mylibrary-e460551407b2.herokuapp.com/api/books/
