@@ -15,9 +15,16 @@ from .serializers import BookSerializer, AuthorSerializer
 
 class RegisterView(APIView):
     def post(self, request):
-        user = User.objects.create()
-        token = Token.objects.create(user=user)
-        return Response({'token': token.key})
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        if username and password:
+            user = User.objects.create_user(username=username, password=password)
+            token, _ = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key})
+        else:
+            return Response({'error': 'Please provide a valid username and password'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 class BookList(APIView):
     permission_classes = [IsAuthenticated]
