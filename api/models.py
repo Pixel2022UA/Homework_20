@@ -23,16 +23,13 @@ class Book(models.Model):
     quantity = models.IntegerField()
     price = models.PositiveIntegerField()
 
-    def __str__(self):
-        return self.title
-
 
 class Order(models.Model):
     books = models.ManyToManyField(Book, through="OrderItems")
     total_price = models.IntegerField()
     create = models.DateTimeField(auto_now_add=True)
     invoice_id = models.CharField(max_length=500, null=True)
-    status = models.CharField(max_length=200)
+    status = models.CharField(max_length=200, null=True)
 
 
 class OrderItems(models.Model):
