@@ -5,7 +5,7 @@ import os
 import ecdsa
 import requests
 
-from library.api.models import Order, OrderItems
+from .models import Order, OrderItems
 
 mono_token = os.getenv("MONOBANK_API_KEY")
 
