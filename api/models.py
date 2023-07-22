@@ -3,7 +3,7 @@ import os
 import requests
 from django.db import models
 
-from library.api.monobank import mono_token
+from .monobank import mono_token
 
 
 class Author(models.Model):
