@@ -1,4 +1,5 @@
 import os
+import logging
 from dotenv import load_dotenv
 from django.contrib.auth.models import User
 from django.db import IntegrityError
@@ -19,6 +20,7 @@ from .serializers import (
 )
 from .monobank import create_order, verify_signature
 
+logger = logging.getLogger(__name__)
 load_dotenv()
 mono_token = os.getenv("MONOBANK_API_KEY")
 
@@ -56,9 +58,11 @@ class OrderCallbackView(APIView):
             return Response({"status": "order not found"}, status=404)
         if order.invoice_id != serializer.validated_data["invoiceId"]:
             return Response({"status": "Invoice ID does not match"}, status=400)
-        status = serializer.validated_data["status"]
-        order.status = None if status == "" else status
+        order.status = serializer.validated_data["status"]
+        logger.info("Received status from external service: %s", status)
+        logger.info("Current status in database: %s", order.status)
         order.save()
+        logger.info("Updated status in database: %s", order.status)
         return Response({"status": "ok"})
 
 
