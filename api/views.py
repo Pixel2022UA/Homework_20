@@ -34,7 +34,7 @@ class OrderView(APIView):
         return Response(data)
 
     def get(self, request):
-        orders = Order.objects.all().order_by("id")
+        orders = Order.objects.all().order_by("-id")
         serializer = OrderModelSerializer(orders, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -56,7 +56,8 @@ class OrderCallbackView(APIView):
             return Response({"status": "order not found"}, status=404)
         if order.invoice_id != serializer.validated_data["invoiceId"]:
             return Response({"status": "Invoice ID does not match"}, status=400)
-        order.status = serializer.validated_data["status"]
+        status = serializer.validated_data["status"]
+        order.status = None if status == "" else status
         order.save()
         return Response({"status": "ok"})
 
