@@ -12,6 +12,7 @@ mono_token = os.getenv("MONOBANK_API_KEY")
 
 def create_order(order_data, webhook_url):
     basketOrder = []
+    order_items = []
     amount = 0
     order = Order.objects.create(total_price=0)
     for item in order_data:
@@ -24,15 +25,16 @@ def create_order(order_data, webhook_url):
                 "unit": "шт.",
             }
         )
-        OrderItems.objects.create(
+        elem = OrderItems.objects.create(
             book=item["book_id"], order=order, quantity=item["quantity"]
         )
+        order_items.append(elem)
         amount += sum
     order.total_price = amount
     order.save()
 
     data = {
-        "amount": 4200,
+        "amount": amount,
         "merchantPaymInfo": {
             "reference": str(order.id),
             "basketOrder": basketOrder,
