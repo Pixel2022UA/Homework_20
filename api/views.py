@@ -43,9 +43,9 @@ class OrderCallbackView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        mono_token = os.getenv("MONOBANK_API_KEY")
+        public_key = os.getenv("MONOBANK_API_KEY")
         if not verify_signature(
-            mono_token, request.headers.get("X-Sign"), request.body
+            public_key, request.headers.get("X-Sign"), request.body
         ):
             return Response({"status": "signature does not match"})
         serializer = MonoCallbackSerializer(data=request.data)
@@ -54,7 +54,7 @@ class OrderCallbackView(APIView):
             order = Order.objects.get(id=serializer.validated_data["reference"])
         except Order.DoesNotExist:
             return Response({"status": "order not found"}, status=404)
-        if order.invoice_id != serializer.validated_data["invoice_id"]:
+        if order.invoice_id != serializer.validated_data:
             return Response({"status": "Invoice ID does not match"}, status=400)
         order.status = serializer.validated_data["status"]
         order.save()
