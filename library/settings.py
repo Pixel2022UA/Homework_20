@@ -156,3 +156,5 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
 }
+
+MONOBANK_API_KEY = os.getenv("MONOBANK_API_KEY")

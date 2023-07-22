@@ -12,7 +12,37 @@ tags:
     description: Everything about books
   - name: Author
     description: Everything about authors
+  - name: Order
+    description: You can order book
 paths:
+  /order/:
+    post:
+      tags:
+        - Order
+      summary: Order book
+      description: You can order the book
+      requestBody:
+        description: Create order
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+            examples:
+              "Buy book":
+                value:
+                  order:
+                    [{"book_id": 2, "quantity": 3}]
+              "Buy book with id 5 with quantity 10 and with id 14 with quantity 3":
+                value:
+                  order:
+                    [{"book_id": 5, "quantity": 10}, [{"book_id": 14, "quantity": 3}]]
+      responses:
+        '200':
+          description: Order create
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
   /register/:
     post:
       tags:
@@ -217,6 +247,33 @@ components:
       name: Authorization
       description: Enter prefix "Token" before token e.g. "Token 5a6ea47ac5470127625ca15967d2b90f7bcf36ba".
   schemas:
+    Order:
+      type: object
+      required:
+      - order
+      properties:
+        order:
+          type: array
+          items:
+            type: object
+            required:
+            - book_id
+            - quantity
+            properties:
+              book_id:
+                type: integer
+                example: 5
+              quantity:
+                type: integer
+                example: 8
+
+
+    OrderResponse:
+      type: object
+      properties:
+        order_id:
+          type: integer
+          example: 15
     Registration:
       properties:
         username:
@@ -244,6 +301,13 @@ components:
         publication_date:
           type: string
           format: date
+        quantity:
+          type: integer
+          example: 15
+        price:
+          type: integer
+          example: 10000
+
     BookWithID:
       properties:
         id:
@@ -261,6 +325,9 @@ components:
         publication_date:
           type: string
           format: date
+        price:
+          type: integer
+          example: 10000
     Author:
       properties:
         id:

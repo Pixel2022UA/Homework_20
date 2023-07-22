@@ -1,17 +1,61 @@
-import time
+import os
 
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.http import Http404
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
+from django.urls import reverse
 from rest_framework import status, serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Book, Author
-from .serializers import BookSerializer, AuthorSerializer
+from .models import Book, Author, Order
+from .serializers import (
+    BookSerializer,
+    AuthorSerializer,
+    OrderSerializer,
+    OrderModelSerializer,
+    MonoCallbackSerializer,
+)
+from .monobank import create_order, verify_signature
+
+
+class OrderView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        order = OrderSerializer(data=request.data)
+        order.is_valid(raise_exception=True)
+        webhook_url = request.build_absolute_url(reverse("callback"))
+        data = create_order(order.validated_data["order"], webhook_url)
+        return Response(data)
+
+    def get(self, request):
+        orders = Order.objects.all().order_by("id")
+        serializer = OrderModelSerializer(orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class OrderCallbackView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        public_key = os.getenv("MONOBANK_API_KEY")
+        if not verify_signature(
+            public_key, request.headers.get("X-Sign"), request.body
+        ):
+            return Response({"status": "signature does not match"})
+        serializer = MonoCallbackSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            order = Order.objects.get(id=serializer.validated_data["reference"])
+        except Order.DoesNotExist:
+            return Response({"status": "order not found"}, status=404)
+        if order.invoice_id != serializer.validated_data["invoice_id"]:
+            return Response({"status": "Invoice ID does not match"}, status=400)
+        order.status = serializer.validated_data["status"]
+        order.save()
+        return Response({"status": "ok"})
 
 
 class RegisterView(APIView):
@@ -50,7 +94,7 @@ class BookList(APIView):
         if genre:
             books = books.filter(genre__icontains=genre)
         serializer = BookSerializer(books, many=True)
-        time.sleep(4)
+        # time.sleep(4)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
@@ -68,6 +112,8 @@ class BookList(APIView):
                 "author": book.author.name,
                 "genre": book.genre,
                 "publication_date": book.publication_date,
+                "quantity": book.quantity,
+                "price": book.price,
             }
             return Response(response_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -106,6 +152,8 @@ class Books(APIView):
                 "author": book.author.name,
                 "genre": book.genre,
                 "publication_date": book.publication_date,
+                "quantity": book.quantity,
+                "price": book.price,
             }
             return Response(response_data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

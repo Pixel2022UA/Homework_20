@@ -15,6 +15,7 @@ Django==4.2.2
 django-redis==5.3.0
 django-rest-authtoken==2.1.4
 djangorestframework==3.14.0
+ecdsa==0.18.0
 exceptiongroup==1.1.1
 fabric==3.1.0
 fake==0.8
