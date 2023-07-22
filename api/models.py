@@ -29,7 +29,7 @@ class Order(models.Model):
     total_price = models.IntegerField()
     create = models.DateTimeField(auto_now_add=True)
     invoice_id = models.CharField(max_length=500, null=True)
-    status = models.CharField(max_length=200)
+    status = models.CharField(max_length=200, null=True)
 
 
 class OrderItems(models.Model):
