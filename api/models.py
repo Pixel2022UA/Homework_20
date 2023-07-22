@@ -1,9 +1,11 @@
 import os
 
 import requests
+from dotenv import load_dotenv
 from django.db import models
 
-from .monobank import mono_token
+load_dotenv()
+mono_token = os.getenv("MONOBANK_API_KEY")
 
 
 class Author(models.Model):

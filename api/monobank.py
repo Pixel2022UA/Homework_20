@@ -1,12 +1,12 @@
 import base64
 import hashlib
 import os
-
 import ecdsa
 import requests
-
+from dotenv import load_dotenv
 from .models import Order, OrderItems
 
+load_dotenv()
 mono_token = os.getenv("MONOBANK_API_KEY")
 
 

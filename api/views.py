@@ -1,5 +1,5 @@
 import os
-
+from dotenv import load_dotenv
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.http import Http404
@@ -18,6 +18,9 @@ from .serializers import (
     MonoCallbackSerializer,
 )
 from .monobank import create_order, verify_signature
+
+load_dotenv()
+mono_token = os.getenv("MONOBANK_API_KEY")
 
 
 class OrderView(APIView):
@@ -40,9 +43,9 @@ class OrderCallbackView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        public_key = os.getenv("MONOBANK_API_KEY")
+        mono_token = os.getenv("MONOBANK_API_KEY")
         if not verify_signature(
-            public_key, request.headers.get("X-Sign"), request.body
+            mono_token, request.headers.get("X-Sign"), request.body
         ):
             return Response({"status": "signature does not match"})
         serializer = MonoCallbackSerializer(data=request.data)
