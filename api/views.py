@@ -29,7 +29,7 @@ class OrderView(APIView):
     def post(self, request):
         order = OrderSerializer(data=request.data)
         order.is_valid(raise_exception=True)
-        webhook_url = request.build_absolute_url(reverse("callback"))
+        webhook_url = request.build_absolute_uri(reverse("callback"))
         data = create_order(order.validated_data["order"], webhook_url)
         return Response(data)
 
