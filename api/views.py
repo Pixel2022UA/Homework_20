@@ -31,7 +31,10 @@ class OrderView(APIView):
         try:
             order.is_valid(raise_exception=True)
         except serializers.ValidationError:
-            return Response({"error": "Book does not created yet"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Book does not created yet with this ID"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         webhook_url = request.build_absolute_uri(reverse("callback"))
         data = create_order(order.validated_data["order"], webhook_url)
         return Response(data)

@@ -43,6 +43,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Book does not created yet with this ID.
   /register/:
     post:
       tags:

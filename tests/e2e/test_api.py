@@ -122,19 +122,29 @@ class APITestCase(TestCase):
 
     @pytest.mark.run(order=9)
     def test_create_order(self):
-        data = {
-            "order": [
-                {
-                    "book_id": 1,
-                    "quantity": 10
-                }
-            ]
-        }
-        response = requests.post(f"{self.base_url}register/", json=data)
-        self.assertEqual(response.status_code, 201)
-        self.assertTrue("id" in data)
-        self.assertTrue("total_price" in data)
-        self.assertTrue("create" in data)
-        self.assertTrue("invoice_id" in data)
-        self.assertTrue("books" in data)
-        self.assertTrue("status" in data)
+        data = {"order": [{"book_id": 1, "quantity": 10}]}
+        r_post = requests.post(f"{self.base_url}orders/", json=data)
+        self.assertEqual(r_post.status_code, 200)
+        r_post = r_post.json()
+        self.assertTrue("id" in r_post)
+        self.assertTrue("url" in r_post)
+
+        r_get = requests.get(f"{self.base_url}orders/", json=data)
+        self.assertEqual(r_get.status_code, 200)
+        r_get = r_get.json()
+        last_order = r_get[0]
+
+        r_books = requests.get(f"{self.base_url}books/", json=data)
+        self.assertEqual(r_books.status_code, 200)
+        r_books = r_books.json()
+
+        first_book_data = r_books[0]
+        expected_total_price = first_book_data["price"] * data["order"][0]["quantity"]
+        expected_invoice_id = r_post["url"].split("/")[-1]
+        expected_books = [data["order"][0]["book_id"]]
+        expected_status = "created"
+
+        self.assertEqual(last_order["total_price"], expected_total_price)
+        self.assertEqual(last_order["invoice_id"], expected_invoice_id)
+        self.assertEqual(last_order["books"], expected_books)
+        self.assertEqual(last_order["status"], expected_status)
