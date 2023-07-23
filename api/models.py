@@ -39,12 +39,12 @@ class OrderItems(models.Model):
 
 
 class MonoSettings(models.Model):
-    pub_key = models.CharField(max_length=1000)
+    public_key = models.CharField(max_length=1000)
 
     @classmethod
     def get_token(cls):
         try:
-            return cls.objects.last().pub_key
+            return cls.objects.last().public_key
         except AttributeError:
             key = requests.get(
                 "https://api.monobank.ua/api/merchant/pubkey",
