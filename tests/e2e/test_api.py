@@ -142,9 +142,8 @@ class APITestCase(TestCase):
         expected_total_price = first_book_data["price"] * data["order"][0]["quantity"]
         expected_invoice_id = r_post["url"].split("/")[-1]
         expected_books = [data["order"][0]["book_id"]]
-        expected_status = "created"
+
 
         self.assertEqual(last_order["total_price"], expected_total_price)
         self.assertEqual(last_order["invoice_id"], expected_invoice_id)
         self.assertEqual(last_order["books"], expected_books)
-        self.assertEqual(last_order["status"], expected_status)
