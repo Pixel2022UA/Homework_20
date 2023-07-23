@@ -47,17 +47,23 @@ class OrderCallbackView(APIView):
         if not verify_signature(
             public_key, request.headers.get("X-Sign"), request.body
         ):
-            return Response({"status": "signature does not match"})
-        serializer = MonoCallbackSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+            return Response({"status": "signature does not match"}, status=400)
+        callback = MonoCallbackSerializer(data=request.data)
+        callback.is_valid(raise_exception=True)
+
+        print("Callback data:", callback.validated_data)
+
         try:
-            order = Order.objects.get(id=serializer.validated_data["reference"])
+            order = Order.objects.get(id=callback.validated_data["reference"])
         except Order.DoesNotExist:
             return Response({"status": "order not found"}, status=404)
-        if order.invoice_id != serializer.validated_data["invoiceId"]:
+        if order.invoice_id != callback.validated_data["invoiceId"]:
             return Response({"status": "Invoice ID does not match"}, status=400)
-        order.status = serializer.validated_data["status"]
+        order.status = callback.validated_data["status"]
         order.save()
+
+        print("Order status updated:", order.status)
+
         return Response({"status": "ok"})
 
 
