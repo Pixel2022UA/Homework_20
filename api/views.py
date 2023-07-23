@@ -9,7 +9,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Book, Author, Order
+from .models import Book, Author, Order, MonoSettings
 from .serializers import (
     BookSerializer,
     AuthorSerializer,
@@ -43,7 +43,7 @@ class OrderCallbackView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        public_key = os.getenv("MONOBANK_API_KEY")
+        public_key = MonoSettings.get_token()
         if not verify_signature(
             public_key, request.headers.get("X-Sign"), request.body
         ):
