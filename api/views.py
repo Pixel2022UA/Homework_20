@@ -30,7 +30,10 @@ class OrderView(APIView):
         order = OrderSerializer(data=request.data)
         order.is_valid(raise_exception=True)
         webhook_url = request.build_absolute_uri(reverse("callback"))
-        data = create_order(order.validated_data["order"], webhook_url)
+        try:
+            data = create_order(order.validated_data["order"], webhook_url)
+        except Book.DoesNotExist:
+            return Response({"error": "Book does not exist or has not yet been created"}, status=400)
         return Response(data)
 
     def get(self, request):

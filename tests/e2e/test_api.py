@@ -35,6 +35,8 @@ class APITestCase(TestCase):
             "author": "Test Author",
             "genre": "Test Genre",
             "publication_date": "2023-05-16",
+            "quantity": 1,
+            "price": 1,
         }
         response = requests.post(f"{self.base_url}books/", json=data, headers=headers)
         self.assertEqual(response.status_code, 201)
@@ -117,3 +119,22 @@ class APITestCase(TestCase):
         self.assertTrue("id" in data)
         self.assertTrue("name" in data)
         self.assertIsInstance(data, dict)
+
+    @pytest.mark.run(order=9)
+    def test_create_order(self):
+        data = {
+            "order": [
+                {
+                    "book_id": 1,
+                    "quantity": 10
+                }
+            ]
+        }
+        response = requests.post(f"{self.base_url}register/", json=data)
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue("id" in data)
+        self.assertTrue("total_price" in data)
+        self.assertTrue("create" in data)
+        self.assertTrue("invoice_id" in data)
+        self.assertTrue("books" in data)
+        self.assertTrue("status" in data)
