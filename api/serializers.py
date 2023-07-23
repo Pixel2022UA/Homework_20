@@ -40,7 +40,7 @@ class OrderModelSerializer(serializers.ModelSerializer):
 
 
 class MonoCallbackSerializer(serializers.Serializer):
-    invoice_id = serializers.CharField()
+    invoiceId = serializers.CharField()
     status = serializers.CharField()
     amount = serializers.IntegerField()
     ccy = serializers.IntegerField()

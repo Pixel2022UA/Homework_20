@@ -57,7 +57,6 @@ class OrderCallbackView(APIView):
         if order.invoice_id != serializer.validated_data["invoiceId"]:
             return Response({"status": "Invoice ID does not match"}, status=400)
         order.status = serializer.validated_data["status"]
-        print(order.status)
         order.save()
         return Response({"status": "ok"})
 

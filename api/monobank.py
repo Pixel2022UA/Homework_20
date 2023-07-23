@@ -15,25 +15,25 @@ def create_order(order_data, webhook_url):
     order_items = []
     amount = 0
     order = Order.objects.create(total_price=0)
-    for item in order_data:
-        sum = item["book_id"].price * item["quantity"]
+    for order_item in order_data:
+        item_sum = order_item["book_id"].price * order_item["quantity"]
         basketOrder.append(
             {
-                "name": item["book_id"].title,
-                "qty": item["quantity"],
-                "sum": sum,
+                "name": order_item["book_id"].title,
+                "qty": order_item["quantity"],
+                "sum": item_sum,
                 "unit": "шт.",
             }
         )
-        elem = OrderItems.objects.create(
-            book=item["book_id"], order=order, quantity=item["quantity"]
+        item = OrderItems.objects.create(
+            book=order_item["book_id"], order=order, quantity=order_item["quantity"]
         )
-        order_items.append(elem)
-        amount += sum
+        order_items.append(item)
+        amount += item_sum
     order.total_price = amount
     order.save()
 
-    data = {
+    body = {
         "amount": amount,
         "merchantPaymInfo": {
             "reference": str(order.id),
@@ -44,7 +44,7 @@ def create_order(order_data, webhook_url):
     request = requests.post(
         "https://api.monobank.ua/api/merchant/invoice/create",
         headers={"X-Token": mono_token},
-        json=data,
+        json=body,
     )
     request.raise_for_status()
     order.invoice_id = request.json()["invoiceId"]
